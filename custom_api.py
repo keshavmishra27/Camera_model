@@ -11,5 +11,4 @@ def root():
 @app.get("/check-faces")
 def check_faces():
     result = process_frame()
-    return resultfrom logic 
-
+    return result

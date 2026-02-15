@@ -1,0 +1,13 @@
+**pycache**/
+*.py[cod]
+*$py.class
+
+venv/
+env/
+ENV/
+.venv/
+
+
+.env
+.env.*
+

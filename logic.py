@@ -24,7 +24,7 @@ def process_frame():
     face_count = len(faces)
 
     
-    if face_count > 5:
+    if face_count >= 1:
         brightness = 100
     elif face_count == 0:
         brightness = 0
