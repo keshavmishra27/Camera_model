@@ -1,4 +1,4 @@
-##  Face Detection Brightness Controller API
+# Face Detection Brightness Controller API
 <br>
 A Python-based computer vision project that detects human faces using OpenCV and automatically adjusts laptop screen brightness.
 
@@ -18,7 +18,7 @@ It also exposes a FastAPI endpoint so the detection system can be triggered via 
 
 <br>
 
-##  Project Logic
+## Project Logic
 
 <br>
 Webcam → Frame Capture → Face Detection → Face Count → Brightness Control
@@ -30,41 +30,48 @@ Brightness Rules:
 | -------------- | ---------- |
 | ≥ 1 Face       | 100%       |
 | 0 Face         | 0%         |
+|any other value | 50%        |
 
 <br>
 
-##  Project Structure
+## 📂 Project Structure
 
 <br>
+<pre><code>
 project/
 │
 ├── logic.py       
 ├── custom_api.py 
 ├── requirements.txt
 └── README.md
+</code></pre>
 <br>
 
 
 ## ⚙️ Installation
 
-###  Clone Repository
+### 1️⃣ Clone Repository
 
 <br>
-bash
+<pre><code> bash
+<br>
 git clone https://github.com/your-username/face-brightness-controller.git
 cd face-brightness-controller
+</code></pre>
 <br>
 
-###  Create Virtual Environment
+### 2️⃣ Create Virtual Environment
 
 <br>
+<pre><code>
 bash
 python -m venv venv
 source venv/bin/activate   # Linux / Mac
 venv\Scripts\activate      # Windows
+<code><pre>
 <br>
 
-###  Install Dependencies
+### 3️⃣ Install Dependencies
 
 <br>bash
 pip install -r requirements.txt
@@ -76,7 +83,7 @@ Or manually:
 pip install opencv-python screen-brightness-control fastapi uvicorn
 <br>
 
-## Running the API Server
+## ▶️ Running the API Server
 
 <br>bash
 uvicorn custom_api:app --reload
@@ -89,7 +96,7 @@ http://127.0.0.1:8000
 <br>
 
 
-##  API Endpoints
+## 🔌 API Endpoints
 
 ### Root Check
 
@@ -124,7 +131,7 @@ Response:
 
 ---
 
-##  How It Works
+## 🧪 How It Works
 
 ### logic.py
 
@@ -139,11 +146,3 @@ Response:
 * Exposes FastAPI endpoints
 * Calls `process_frame()` from logic layer
 * Returns JSON response
-
-
-
-
-
-
-
-
