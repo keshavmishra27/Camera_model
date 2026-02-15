@@ -1,4 +1,4 @@
-# Camera_model# 👁️ Face Detection Brightness Controller API
+#👁️ Face Detection Brightness Controller API
 <br>
 A Python-based computer vision project that detects human faces using OpenCV and automatically adjusts laptop screen brightness.
 
@@ -139,6 +139,7 @@ Response:
 * Exposes FastAPI endpoints
 * Calls `process_frame()` from logic layer
 * Returns JSON response
+
 
 
 
