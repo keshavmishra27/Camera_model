@@ -49,17 +49,16 @@ project/
 
 
 ## ⚙️ Installation
-
 ### 1️⃣ Clone Repository
 
 <br>
 <pre><code> bash
 <br>
-git clone https://github.com/your-username/face-brightness-controller.git
+git clone https://github.com/keshavmishra27/Camera_model.git
 cd face-brightness-controller
 </code></pre>
-<br>
 
+<br>
 ### 2️⃣ Create Virtual Environment
 
 <br>
@@ -146,3 +145,4 @@ Response:
 * Exposes FastAPI endpoints
 * Calls `process_frame()` from logic layer
 * Returns JSON response
+
