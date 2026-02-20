@@ -5,35 +5,38 @@ face_cascade = cv2.CascadeClassifier(
     cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
 )
 
-cap = cv2.VideoCapture(0)
-
 def process_frame():
-    ret, frame = cap.read()
-    if not ret:
-        return {"error": "Camera not accessible"}
+    cap = cv2.VideoCapture(0)
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    try:
+        ret, frame = cap.read()
+        if not ret:
+            return {"error": "Camera not accessible"}
 
-    faces = face_cascade.detectMultiScale(
-        gray,
-        scaleFactor=1.3,
-        minNeighbors=5,
-        minSize=(30, 30)
-    )
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    face_count = len(faces)
+        faces = face_cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.3,
+            minNeighbors=5,
+            minSize=(30, 30)
+        )
 
-    
-    if face_count >= 1:
-        brightness = 100
-    elif face_count == 0:
-        brightness = 0
-    else:
-        brightness = 50
+        face_count = len(faces)
 
-    sbc.set_brightness(brightness)
+        if face_count >= 1:
+            brightness = 100
+        elif face_count == 0:
+            brightness = 0
+        else:
+            brightness = 50
 
-    return {
-        "faces_detected": face_count,
-        "brightness_set": brightness
-    }
+        sbc.set_brightness(brightness)
+
+        return {
+            "faces_detected": face_count,
+            "brightness_set": brightness
+        }
+
+    finally:
+        cap.release()  

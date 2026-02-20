@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from logic import process_frame
 
