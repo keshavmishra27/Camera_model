@@ -1,148 +1,142 @@
-# Face Detection Brightness Controller API
-<br>
-A Python-based computer vision project that detects human faces using OpenCV and automatically adjusts laptop screen brightness.
+# Face Detection Brightness Controller
 
-It also exposes a FastAPI endpoint so the detection system can be triggered via a custom API.
-<br>
-
-
-##  Features
-<br>
-
-* Real-time face detection using Haar Cascade
-* Automatic screen brightness adjustment
-* Brightness ON when faces detected
-* Brightness OFF when no faces detected
-* FastAPI integration for API access
-* Lightweight and hardware-aware automation
-
-<br>
-
-## Project Logic
-
-<br>
-Webcam → Frame Capture → Face Detection → Face Count → Brightness Control
-<br>
-
-Brightness Rules:
-
-| Faces Detected | Brightness |
-| -------------- | ---------- |
-| ≥ 1 Face       | 100%       |
-| 0 Face         | 0%         |
-|any other value | 50%        |
-
-<br>
-
-## 📂 Project Structure
-
-<br>
-<pre><code>
-project/
-│
-├── logic.py       
-├── custom_api.py 
-├── requirements.txt
-└── README.md
-</code></pre>
-<br>
-
-
-## ⚙️ Installation
-### 1️⃣ Clone Repository
-
-<br>
-<pre><code> bash
-<br>
-git clone https://github.com/keshavmishra27/Camera_model.git
-cd face-brightness-controller
-</code></pre>
-
-<br>
-### 2️⃣ Create Virtual Environment
-
-<br>
-<pre><code>
-bash
-python -m venv venv
-source venv/bin/activate   # Linux / Mac
-venv\Scripts\activate      # Windows
-<code><pre>
-<br>
-
-### 3️⃣ Install Dependencies
-
-<br>bash
-pip install -r requirements.txt
-<br>
-
-Or manually:
-
-<br>bash
-pip install opencv-python screen-brightness-control fastapi uvicorn
-<br>
-
-## ▶️ Running the API Server
-
-<br>bash
-uvicorn custom_api:app --reload
-<br>
-
-Server runs at:
-
-<br>
-http://127.0.0.1:8000
-<br>
-
-
-## 🔌 API Endpoints
-
-### Root Check
-
-<br>
-GET /
-<br>
-
-Response:
-
-<br>json
-{
-  "message": "Face Brightness Controller Running"
-}
-<br>
+A Python computer vision project that watches your webcam, detects faces, and automatically adjusts your laptop screen brightness. Comes with a FastAPI backend and a browser-based Solara frontend for end-to-end use.
 
 ---
 
-### Face Detection + Brightness Trigger
+## Features
 
-<br>
-GET /check-faces
-<br>
+- Real-time face detection via OpenCV Haar Cascade
+- Automatic screen brightness adjustment (100% when face detected, 0% when nobody is there)
+- FastAPI backend exposing clean REST endpoints
+- Solara browser UI — start/stop monitoring with one click, live status badge, brightness bar
 
-Response:
+---
 
-<br>json
+## How It Works
+
+```
+Webcam  →  Frame Capture  →  Face Detection  →  Face Count  →  Brightness Control
+```
+
+| Faces Detected | Brightness Set |
+| -------------- | -------------- |
+| 1 or more      | 100%           |
+| 0              | 0%             |
+
+---
+
+## Project Structure
+
+```
+Camera_model/
+├── logic.py          # Core: webcam capture, face detection, brightness control
+├── custom_api.py     # FastAPI backend exposing /check-faces endpoint
+├── app.py            # Solara browser frontend
+├── requirement.txt   # Python dependencies
+└── README.md
+```
+
+---
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/keshavmishra27/Camera_model.git
+cd Camera_model
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux / Mac
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirement.txt
+```
+
+---
+
+## Running the App
+
+You need **two terminals** running at the same time.
+
+### Terminal 1 — Start the backend
+
+```bash
+uvicorn custom_api:app --reload
+```
+
+Backend runs at: `http://127.0.0.1:8000`
+
+### Terminal 2 — Start the frontend
+
+```bash
+solara run app.py
+```
+
+Frontend runs at: `http://localhost:8765`
+
+Open that URL in your browser to use the dashboard.
+
+---
+
+## Using the Dashboard
+
+1. Click **Start Monitoring** — the app will begin checking your webcam every 3 seconds
+2. Your screen brightness adjusts automatically based on face detection
+3. **Uncheck the checkbox** (shown while monitoring is active) to stop
+
+---
+
+## API Endpoints
+
+### `GET /`
+
+Health check.
+
+```json
+{ "message": "Face Brightness Controller Running" }
+```
+
+### `GET /check-faces`
+
+Captures a webcam frame, runs face detection, sets brightness, and returns the result.
+
+```json
 {
   "faces_detected": 1,
   "brightness_set": 100
 }
-<br>
+```
 
 ---
 
-## 🧪 How It Works
+## File Details
 
-### logic.py
+### `logic.py`
+- Opens webcam, reads one frame
+- Converts to grayscale
+- Detects faces using Haar Cascade classifier
+- Counts faces and sets brightness via `screen_brightness_control`
 
-* Captures frame from webcam
-* Converts to grayscale
-* Detects faces using Haar Cascade
-* Counts faces
-* Adjusts brightness via `screen_brightness_control`
+### `custom_api.py`
+- FastAPI app with two endpoints (`/` and `/check-faces`)
+- Calls `process_frame()` from `logic.py` and returns JSON
 
-### custom_api.py
-
-* Exposes FastAPI endpoints
-* Calls `process_frame()` from logic layer
-* Returns JSON response
-
+### `app.py`
+- Solara frontend rendered in the browser
+- Reactive state (face count, brightness, status)
+- Background thread polls `/check-faces` every 3 seconds when monitoring is enabled
+- Components: status badge, brightness bar, stat cards, error banner
