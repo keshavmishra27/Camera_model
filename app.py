@@ -22,8 +22,9 @@ _stop_event = threading.Event()
 ann_message = solara.reactive(
     "Time is up for the current group. Next group please proceed to the practical exam area."
 )
-ann_delay_min = solara.reactive(15)
+ann_interval_min = solara.reactive(15)
 ann_status = solara.reactive("idle")        
+ann_repeat_count = solara.reactive(0)       
 ann_remaining = solara.reactive("")         
 ann_history = solara.reactive([])         
 
@@ -106,34 +107,39 @@ def _speak(text):
         pass  
 
 
-def _announcement_worker(message, delay_seconds, stop_event):
-    """Background thread: count down, then speak."""
-    ann_status.set("waiting")
-    target = time.time() + delay_seconds
+def _announcement_worker(message, interval_seconds, stop_event):
+    """Background thread: repeatedly count down and speak at each interval."""
+    ann_repeat_count.set(0)
 
     while not stop_event.is_set():
-        remaining = target - time.time()
-        if remaining <= 0:
+        # --- countdown phase ---
+        ann_status.set("waiting")
+        target = time.time() + interval_seconds
+
+        while not stop_event.is_set():
+            remaining = target - time.time()
+            if remaining <= 0:
+                break
+            mins, secs = divmod(int(remaining), 60)
+            ann_remaining.set(f"{mins:02d}:{secs:02d}")
+            stop_event.wait(1)
+
+        if stop_event.is_set():
             break
-        mins, secs = divmod(int(remaining), 60)
-        ann_remaining.set(f"{mins:02d}:{secs:02d}")
-        stop_event.wait(1)
 
-    if stop_event.is_set():
-        ann_status.set("idle")
-        ann_remaining.set("")
-        return
+        # --- speak phase ---
+        ann_status.set("speaking")
+        ann_remaining.set("00:00")
+        _speak(message)
 
-    # Time to speak
-    ann_status.set("speaking")
-    ann_remaining.set("00:00")
-    _speak(message)
+        # record in history
+        count = ann_repeat_count.value + 1
+        ann_repeat_count.set(count)
+        entry = f"[{time.strftime('%H:%M:%S')}] (#{count})  {message[:80]}{'…' if len(message) > 80 else ''}"
+        ann_history.set(ann_history.value + [entry])
 
-    # Record in history
-    entry = f"[{time.strftime('%H:%M:%S')}]  {message[:80]}{'…' if len(message) > 80 else ''}"
-    ann_history.set(ann_history.value + [entry])
-
-    ann_status.set("done")
+    # stopped by user
+    ann_status.set("idle")
     ann_remaining.set("")
 
 
@@ -142,10 +148,10 @@ def schedule_announcement():
     if ann_status.value == "waiting":
         return  
     _ann_stop = threading.Event()
-    delay = max(0.1, ann_delay_min.value) * 60
+    interval = max(0.1, ann_interval_min.value) * 60
     _ann_thread = threading.Thread(
         target=_announcement_worker,
-        args=(ann_message.value, delay, _ann_stop),
+        args=(ann_message.value, interval, _ann_stop),
         daemon=True,
     )
     _ann_thread.start()
@@ -424,7 +430,7 @@ def AnnouncerView():
             },
         )
         solara.Text(
-            "Schedule a timed voice announcement. Perfect for calling groups during practicals.",
+            "Set a repeating voice announcement at a fixed interval. Perfect for calling groups during practicals.",
             style={"color": "#81d4fa", "margin-bottom": "28px", "font-size": "14px"},
         )
 
@@ -467,7 +473,7 @@ def AnnouncerView():
             ),
         ):
             solara.Text(
-                "Delay (minutes)",
+                "Repeat Interval (minutes)",
                 style={
                     "font-size": "11px",
                     "color": "#81d4fa",
@@ -479,8 +485,8 @@ def AnnouncerView():
             )
             solara.InputInt(
                 label="",
-                value=ann_delay_min.value,
-                on_value=ann_delay_min.set,
+                value=ann_interval_min.value,
+                on_value=ann_interval_min.set,
                 disabled=st == "waiting",
             )
 
@@ -491,7 +497,7 @@ def AnnouncerView():
         ):
             if st != "waiting":
                 solara.Button(
-                    "🔊  Schedule Announcement",
+                    "🔊  Start Repeating Announcement",
                     on_click=schedule_announcement,
                     color="primary",
                 )
@@ -512,8 +518,10 @@ def AnnouncerView():
                     "margin-bottom:24px;"
                 ),
             ):
+                rcount = ann_repeat_count.value
+                header = f"⏳  Next announcement in  (played {rcount}× so far)"
                 solara.Text(
-                    "⏳  Announcing in",
+                    header,
                     style={
                         "font-size": "13px",
                         "color": "#81d4fa",
@@ -544,16 +552,7 @@ def AnnouncerView():
             ):
                 solara.Text("🔈  Speaking now …")
 
-        if st == "done":
-            with solara.v.Html(
-                tag="div",
-                style_=(
-                    "background:#102027;border:1px solid #4fc3f7;"
-                    "border-radius:10px;padding:20px;text-align:center;"
-                    "margin-bottom:24px;color:#4fc3f7;font-size:15px;font-weight:600;"
-                ),
-            ):
-                solara.Text("✅  Announcement complete! You can schedule another.")
+
 
         
         if hist:
