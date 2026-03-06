@@ -5,3 +5,4 @@ screen-brightness-control
 numpy
 solara
 requests
+pyttsx3

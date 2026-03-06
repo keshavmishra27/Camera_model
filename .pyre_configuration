@@ -1,0 +1,10 @@
+{
+  "source_directories": [
+    "."
+  ],
+  "python_version": "3.11",
+  "site_package_search_strategy": "all",
+  "search_path": [
+    "C:/Users/hp/AppData/Local/Programs/Python/Python311/Lib/site-packages"
+  ]
+}
