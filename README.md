@@ -62,7 +62,7 @@ graph LR
     end
     
     subgraph Backend [FastAPI / Python]
-        Endpoint[/check-faces]
+        Endpoint["/check-faces"]
         Logic[process_frame]
         CV((OpenCV Haar Cascades))
         SBC[screen_brightness_control]
