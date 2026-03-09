@@ -18,7 +18,68 @@ A Python-powered computer-vision toolkit that watches your webcam, detects faces
 - **Live countdown** displayed in the browser between announcements
 - **Repeat counter** — tracks how many times the announcement has been played
 - **Announcement history** — timestamped log of every announcement made during the session
+- **Mesmerizing UI** 🌟 — features a sleek "Cosmic Gradient" animated heading, interactive neon glassmorphism inputs, and a glowing fiery pulse indicator when speaking.
 - Perfect for **exam practicals** — call groups of students at regular intervals hands-free
+
+---
+
+## 🌊 Flow for Features
+
+```mermaid
+graph TD
+    User([User]) -->|Opens App| Solara[Solara Frontend]
+    
+    Solara -->|Selects Tab| Hub{Camera Automation Hub}
+    
+    Hub -->|Tab 1| Cam[Camera Controller]
+    Hub -->|Tab 2| Announce[Exam Announcer]
+    
+    Cam -->|Clicks 'Start'| Poll[Background Polling]
+    Poll -->|Checks every 3s| API[FastAPI Backend]
+    API -->|Returns State| Sync[Updates UI Cards & Bar]
+    Sync --> Cam
+    
+    Announce -->|Enters Message & Interval| Setup[Configure Settings]
+    Setup -->|Clicks 'Start'| Timer[Countdown Timer Starts]
+    Timer -->|Reaches 00:00| Speak[TTS Engine Speaks]
+    Speak -->|Logs History & Increments| Timer
+```
+
+---
+
+## 🧠 Flow for Tech
+
+```mermaid
+graph LR
+    subgraph Frontend [Solara UI]
+        State[(Reactive State)]
+        UI[Components]
+        State <--> UI
+    end
+    
+    subgraph Communication [REST API]
+        Fetch[Requests .get]
+    end
+    
+    subgraph Backend [FastAPI / Python]
+        Endpoint[/check-faces]
+        Logic[process_frame]
+        CV((OpenCV Haar Cascades))
+        SBC[screen_brightness_control]
+        TTS[pyttsx3]
+    end
+    
+    UI -->|Triggers| Fetch
+    Fetch -->|HTTP GET| Endpoint
+    Endpoint --> Logic
+    Logic -->|Captures Frame| CV
+    CV -->|Finds Faces| SBC
+    SBC -->|Adjusts Screen| Logic
+    Logic -->|Returns JSON| Fetch
+    Fetch -->|Updates| State
+    
+    UI -.->|Direct Call| TTS
+```
 
 ---
 

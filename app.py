@@ -420,39 +420,90 @@ def AnnouncerView():
         style_="max-width:720px;margin:40px auto;padding:0 24px",
     ):
         
-        solara.Text(
-            "📢  Exam Announcer",
-            style={
-                "font-size": "22px",
-                "font-weight": "700",
-                "color": "#4fc3f7",
-                "margin-bottom": "6px",
-            },
+        solara.v.Html(
+            tag="style",
+            children=[
+                """
+                @keyframes cosmic-pulse {
+                    0% { filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 0, 255, 0.4)); transform: scale(1); }
+                    50% { filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.8)) drop-shadow(0 0 25px rgba(255, 0, 255, 0.6)); transform: scale(1.02); }
+                    100% { filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 0, 255, 0.4)); transform: scale(1); }
+                }
+                .cosmic-heading {
+                    animation: cosmic-pulse 3s ease-in-out infinite;
+                    display: block;
+                    text-align: center;
+                    background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
+                    background-size: 200% auto;
+                    color: transparent;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    animation: cosmic-pulse 3s ease-in-out infinite, gradientFlow 5s linear infinite;
+                }
+                @keyframes gradientFlow {
+                    0% { background-position: 0% center; }
+                    100% { background-position: 200% center; }
+                }
+                @keyframes pulse-intense {
+                    from { box-shadow: 0 0 10px rgba(255, 0, 60, 0.4); }
+                    to { box-shadow: 0 0 30px rgba(255, 0, 60, 0.8), inset 0 0 15px rgba(255, 0, 60, 0.5); }
+                }
+                .neon-input input {
+                    color: #00ffff !important;
+                    font-size: 16px !important;
+                    font-weight: 600 !important;
+                    text-shadow: 0 0 5px rgba(0,255,255,0.5);
+                }
+                .neon-input .v-input__slot {
+                    background: rgba(16, 32, 39, 0.7) !important;
+                    border: 1px solid #00ffff !important;
+                    box-shadow: 0 0 8px rgba(0,255,255,0.3) !important;
+                    border-radius: 8px !important;
+                    transition: all 0.3s ease;
+                }
+                .neon-input.v-input--is-focused .v-input__slot {
+                    box-shadow: 0 0 15px rgba(0,255,255,0.8), inset 0 0 5px rgba(0,255,255,0.3) !important;
+                    border-color: #fff !important;
+                }
+                """
+            ]
+        )
+        solara.v.Html(
+            tag="h1",
+            children=["📢  Exam Announcer"],
+            class_="cosmic-heading",
+            style_=(
+                "font-size: 46px; font-weight: 900; "
+                "margin-bottom: 20px; margin-top: 10px; letter-spacing: 3px; "
+                "text-transform: uppercase;"
+            )
         )
         solara.Text(
             "Set a repeating voice announcement at a fixed interval. Perfect for calling groups during practicals.",
-            style={"color": "#81d4fa", "margin-bottom": "28px", "font-size": "14px"},
+            style={"color": "#a7ffeb", "margin-bottom": "36px", "font-size": "15px", "font-weight": "500", "text-shadow": "0 0 5px rgba(167,255,235,0.3)", "display": "block", "textAlign": "center"},
         )
 
         
         with solara.v.Html(
             tag="div",
             style_=(
-                "background:#102027;border:1px solid #03a9f4;"
-                "border-radius:10px;padding:24px;"
-                "box-shadow:0 1px 4px rgba(3,169,244,0.3);"
-                "margin-bottom:20px;"
+                "background:rgba(16, 32, 39, 0.6);border:1px solid rgba(0, 255, 255, 0.4);"
+                "border-radius:15px;padding:28px;"
+                "box-shadow:0 8px 32px rgba(0, 255, 255, 0.15);"
+                "backdrop-filter: blur(10px);"
+                "margin-bottom:24px; transition: transform 0.3s ease, box-shadow 0.3s ease;"
             ),
         ):
             solara.Text(
                 "Announcement Message",
                 style={
-                    "font-size": "11px",
-                    "color": "#81d4fa",
-                    "font-weight": "600",
+                    "font-size": "13px",
+                    "color": "#00ffff",
+                    "font-weight": "700",
                     "text-transform": "uppercase",
-                    "letter-spacing": "0.8px",
-                    "margin-bottom": "8px",
+                    "letter-spacing": "1.2px",
+                    "margin-bottom": "12px",
+                    "text-shadow": "0 0 4px rgba(0, 255, 255, 0.6)"
                 },
             )
             solara.InputText(
@@ -460,27 +511,30 @@ def AnnouncerView():
                 value=ann_message.value,
                 on_value=ann_message.set,
                 disabled=st == "waiting",
+                classes=["neon-input"]
             )
 
         
         with solara.v.Html(
             tag="div",
             style_=(
-                "background:#102027;border:1px solid #03a9f4;"
-                "border-radius:10px;padding:24px;"
-                "box-shadow:0 1px 4px rgba(3,169,244,0.3);"
-                "margin-bottom:24px;"
+                "background:rgba(16, 32, 39, 0.6);border:1px solid rgba(255, 0, 255, 0.4);"
+                "border-radius:15px;padding:28px;"
+                "box-shadow:0 8px 32px rgba(255, 0, 255, 0.15);"
+                "backdrop-filter: blur(10px);"
+                "margin-bottom:32px; transition: transform 0.3s ease, box-shadow 0.3s ease;"
             ),
         ):
             solara.Text(
                 "Repeat Interval (minutes)",
                 style={
-                    "font-size": "11px",
-                    "color": "#81d4fa",
-                    "font-weight": "600",
+                    "font-size": "13px",
+                    "color": "#ff00ff",
+                    "font-weight": "700",
                     "text-transform": "uppercase",
-                    "letter-spacing": "0.8px",
-                    "margin-bottom": "8px",
+                    "letter-spacing": "1.2px",
+                    "margin-bottom": "12px",
+                    "text-shadow": "0 0 4px rgba(255, 0, 255, 0.6)"
                 },
             )
             solara.InputInt(
@@ -488,34 +542,67 @@ def AnnouncerView():
                 value=ann_interval_min.value,
                 on_value=ann_interval_min.set,
                 disabled=st == "waiting",
+                classes=["neon-input"]
             )
 
         
         with solara.v.Html(
             tag="div",
-            style_="display:flex;align-items:center;gap:14px;margin-bottom:28px;flex-wrap:wrap",
+            style_="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:36px;flex-wrap:wrap",
         ):
             if st != "waiting":
-                solara.Button(
-                    "🔊  Start Repeating Announcement",
-                    on_click=schedule_announcement,
-                    color="primary",
-                )
+                with solara.v.Html(
+                    tag="div",
+                    style_=(
+                        "display: inline-block; padding: 3px; border-radius: 30px; "
+                        "background: linear-gradient(45deg, #00ffff, #39ff14); "
+                        "box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);"
+                    )
+                ):
+                    solara.Button(
+                        "🔊  START REPEATING ANNOUNCEMENT",
+                        on_click=schedule_announcement,
+                        color="black",
+                        dark=True,
+                        style={
+                            "color": "#39ff14",
+                            "font-weight": "800",
+                            "letter-spacing": "1px",
+                            "border-radius": "28px",
+                            "padding": "10px 24px",
+                        }
+                    )
             else:
-                solara.Button(
-                    "✖  Cancel",
-                    on_click=cancel_announcement,
-                    color="error",
-                )
+                with solara.v.Html(
+                    tag="div",
+                    style_=(
+                        "display: inline-block; padding: 3px; border-radius: 30px; "
+                        "background: linear-gradient(45deg, #ff003c, #ff00ff); "
+                        "box-shadow: 0 0 15px rgba(255, 0, 60, 0.5);"
+                    )
+                ):
+                    solara.Button(
+                        "✖  CANCEL",
+                        on_click=cancel_announcement,
+                        color="black",
+                        dark=True,
+                        style={
+                            "color": "#ff003c",
+                            "font-weight": "800",
+                            "letter-spacing": "1px",
+                            "border-radius": "28px",
+                            "padding": "10px 24px",
+                        }
+                    )
 
         
         if st == "waiting" and rem:
             with solara.v.Html(
                 tag="div",
                 style_=(
-                    "background:#0a1f2e;border:1px solid #03a9f4;"
-                    "border-radius:10px;padding:32px;text-align:center;"
-                    "margin-bottom:24px;"
+                    "background:rgba(10, 31, 46, 0.8);border:1px solid rgba(57, 255, 20, 0.5);"
+                    "border-radius:20px;padding:32px;text-align:center;"
+                    "margin-bottom:32px;box-shadow:0 0 40px rgba(57, 255, 20, 0.2) inset;"
                 ),
             ):
                 rcount = ann_repeat_count.value
@@ -523,21 +610,22 @@ def AnnouncerView():
                 solara.Text(
                     header,
                     style={
-                        "font-size": "13px",
-                        "color": "#81d4fa",
+                        "font-size": "14px",
+                        "color": "#a7ffeb",
                         "text-transform": "uppercase",
-                        "letter-spacing": "1px",
-                        "font-weight": "600",
+                        "letter-spacing": "1.5px",
+                        "font-weight": "700",
                     },
                 )
                 solara.Text(
                     rem,
                     style={
-                        "font-size": "54px",
-                        "font-weight": "700",
-                        "color": "#4fc3f7",
+                        "font-size": "64px",
+                        "font-weight": "900",
+                        "color": "#39ff14",
                         "font-family": "'Courier New', monospace",
-                        "margin": "8px 0",
+                        "margin": "12px 0",
+                        "text-shadow": "0 0 10px #39ff14, 0 0 20px #39ff14",
                     },
                 )
 
@@ -545,12 +633,14 @@ def AnnouncerView():
             with solara.v.Html(
                 tag="div",
                 style_=(
-                    "background:#1b3a1b;border:1px solid #66bb6a;"
-                    "border-radius:10px;padding:20px;text-align:center;"
-                    "margin-bottom:24px;color:#a5d6a7;font-size:15px;font-weight:600;"
-                ),
+                    "background:rgba(255, 0, 60, 0.15);border:1px solid #ff003c;"
+                    "border-radius:20px;padding:24px;text-align:center;"
+                    "margin-bottom:32px;color:#ff003c;font-size:18px;font-weight:800;"
+                    "box-shadow:0 0 20px rgba(255, 0, 60, 0.4); text-transform: uppercase;"
+                    "letter-spacing: 2px; animation: pulse-intense 1s infinite alternate;"
+                )
             ):
-                solara.Text("🔈  Speaking now …")
+                solara.Text("🔈  SPEAKING NOW ...", style={"text-shadow": "0 0 8px #ff003c"})
 
 
 
