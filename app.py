@@ -244,10 +244,13 @@ def StatCard(title, value, sub=""):
     with solara.v.Html(
         tag="div",
         style_=(
-            "background:#102027;border:1px solid #03a9f4;"
-            "border-radius:10px;padding:18px 24px;min-width:140px;"
-            "box-shadow:0 1px 4px rgba(3,169,244,0.3);"
+            "background:rgba(16, 32, 39, 0.6);border:1px solid rgba(0, 242, 254, 0.4);"
+            "border-radius:15px;padding:22px 28px;min-width:150px; flex: 1;"
+            "box-shadow:0 8px 32px rgba(0, 242, 254, 0.15), inset 0 0 15px rgba(0, 242, 254, 0.1);"
+            "backdrop-filter: blur(10px); transition: transform 0.3s ease, box-shadow 0.3s ease;"
         ),
+        attributes={"onmouseover": "this.style.transform='translateY(-5px)'; this.style.boxShadow='0 12px 40px rgba(0, 242, 254, 0.3), inset 0 0 20px rgba(0, 242, 254, 0.2)';",
+                    "onmouseout": "this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0, 242, 254, 0.15), inset 0 0 15px rgba(0, 242, 254, 0.1)';"}
     ):
         solara.Text(
             title,
@@ -262,11 +265,12 @@ def StatCard(title, value, sub=""):
         solara.Text(
             value,
             style={
-                "font-size": "38px",
-                "font-weight": "700",
-                "color": "#e1f5fe",
+                "font-size": "50px",
+                "font-weight": "900",
+                "color": "#fff",
                 "line-height": "1.1",
-                "margin": "6px 0 3px",
+                "margin": "10px 0 5px",
+                "text-shadow": "0 0 10px #00f2fe, 0 0 20px #00f2fe",
             },
         )
         if sub:
@@ -284,11 +288,43 @@ def Dashboard():
 
     with solara.v.Html(
         tag="main",
-        style_="max-width:720px;margin:40px auto;padding:0 24px",
+        style_="max-width:800px;margin:40px auto;padding:0 24px",
     ):
+        solara.v.Html(
+            tag="style",
+            children=[
+                """
+                @keyframes cyber-wave {
+                    0% { filter: hue-rotate(0deg) drop-shadow(0 0 10px rgba(0, 195, 255, 0.8)); }
+                    50% { filter: hue-rotate(60deg) drop-shadow(0 0 25px rgba(0, 255, 128, 1)); transform: scale(1.02); }
+                    100% { filter: hue-rotate(0deg) drop-shadow(0 0 10px rgba(0, 195, 255, 0.8)); }
+                }
+                .cyber-heading {
+                    display: block;
+                    text-align: center;
+                    background: linear-gradient(135deg, #00f2fe, #4facfe, #00f2fe);
+                    background-size: 200% auto;
+                    color: transparent;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    animation: cyber-wave 4s ease-in-out infinite, gradientFlow 6s linear infinite;
+                }
+                """
+            ]
+        )
+        solara.v.Html(
+            tag="h1",
+            children=["👁️  A.I. Vision Controller"],
+            class_="cyber-heading",
+            style_=(
+                "font-size: 44px; font-weight: 900; "
+                "margin-bottom: 16px; margin-top: 10px; letter-spacing: 4px; "
+                "text-transform: uppercase;"
+            )
+        )
         solara.Text(
-            "Detects faces via your webcam and adjusts screen brightness automatically.",
-            style={"color": "#81d4fa", "margin-bottom": "28px", "font-size": "14px"},
+            "Detects faces via your webcam and dynamically adjusts screen brightness to match your presence.",
+            style={"color": "#b3e5fc", "margin-bottom": "36px", "font-size": "15px", "font-weight": "500", "text-shadow": "0 0 8px rgba(179,229,252,0.4)", "display": "block", "textAlign": "center"},
         )
 
         with solara.v.Html(
@@ -375,9 +411,10 @@ def Dashboard():
             with solara.v.Html(
                 tag="div",
                 style_=(
-                    "background:#102027;border:1px solid #03a9f4;"
-                    "border-radius:10px;padding:20px 24px;"
-                    "box-shadow:0 1px 4px rgba(3,169,244,0.3);"
+                    "background:rgba(16, 32, 39, 0.6);border:1px solid rgba(0, 242, 254, 0.4);"
+                    "border-radius:15px;padding:28px;"
+                    "box-shadow:0 8px 32px rgba(0, 242, 254, 0.15);"
+                    "backdrop-filter: blur(10px);"
                 ),
             ):
                 BrightnessBar()
@@ -679,6 +716,13 @@ def AnnouncerView():
 @solara.component
 def Page():
     tab = active_tab.value
+
+    # Clean up background threads when the user reloads or closes the tab
+    def cleanup_threads():
+        cancel_announcement()
+        _stop_monitor()
+        
+    solara.use_effect(lambda: cleanup_threads, [])
 
     with solara.v.Html(
         tag="div",
