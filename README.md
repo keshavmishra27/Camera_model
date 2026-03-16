@@ -4,6 +4,43 @@ A Python-powered computer-vision toolkit that watches your webcam, detects faces
 
 ---
 
+## 📊 System Architecture
+
+```mermaid
+graph TD
+    %% Styling
+    classDef primary fill:#1a1a2e,stroke:#0f3460,stroke-width:3px,color:#00d2ff,rx:10,ry:10;
+    classDef secondary fill:#16213e,stroke:#0f3460,stroke-width:3px,color:#e94560,rx:10,ry:10;
+    classDef hardware fill:#1a1a2e,stroke:#e94560,stroke-width:3px,color:#fff,rx:10,ry:10;
+    classDef control fill:#1b1b2f,stroke:#24a19c,stroke-width:3px,color:#fff,rx:10,ry:10;
+
+    subgraph Frontend ["🎨 Reactive UI (Solara)"]
+        App["<b>app.py</b><br/>Dashboard & Controls"]:::primary
+        State["<b>Reactive State</b><br/>Face Count, Timer"]:::primary
+    end
+
+    subgraph Backend ["🚀 Backend (FastAPI)"]
+        API["<b>custom_api.py</b><br/>REST Endpoints"]:::secondary
+        Logic["<b>logic.py</b><br/>Vision Processing"]:::secondary
+    end
+
+    subgraph System ["🖥️ System Control"]
+        Brightness["<b>Brightness Control</b><br/>(Screen API)"]:::control
+        TTS["<b>Voice Engine</b><br/>(pyttsx3)"]:::control
+    end
+
+    Camera["📷 <b>Webcam</b>"]:::hardware
+
+    %% Connections
+    Camera --> Logic
+    App -->|Requests| API
+    API --> Logic
+    Logic --> Brightness
+    App --> TTS
+```
+
+---
+
 ## ✨ Features
 
 ### 🎥 Camera Controller
@@ -94,6 +131,50 @@ Camera_model/
 ├── test_logic.py       # Quick smoke test for logic.py
 ├── requirement.txt     # Python dependencies
 └── README.md
+```
+
+---
+
+## 🔄 Logic Flow
+
+### 📷 Camera Automation Loop
+```mermaid
+graph LR
+    %% Styling
+    classDef step fill:#1a1a2e,stroke:#00d2ff,stroke-width:2px,color:#fff;
+    classDef decision fill:#16213e,stroke:#e94560,stroke-width:2px,color:#fff;
+
+    Start((Start)) --> Capture[Capture Frame]:::step
+    Capture --> Detection{Face Detected?}:::decision
+    Detection -- Yes --> BrightHigh[Set Brightness 100%]:::step
+    Detection -- No --> BrightLow[Set Brightness 0%]:::step
+    BrightHigh --> Wait[Wait 3s]:::step
+    BrightLow --> Wait
+    Wait --> Capture
+```
+
+### 📢 Exam Announcer Flow
+```mermaid
+sequenceDiagram
+    autonumber
+    
+    %% Colors
+    participant U as User
+    participant A as app.py (Frontend)
+    participant T as TTS Engine
+    
+    Note over U,T: Interactive Announcement Cycle
+    
+    U->>A: Set Msg & Interval
+    A->>A: Start Ticker Task
+    loop Every Second
+        A->>A: Update Countdown
+    end
+    Note right of A: Countdown hits 00:00
+    A->>T: Speak Announcement
+    T-->>A: Done
+    A->>A: Increment Counter
+    A->>A: Reset Timer
 ```
 
 ---
